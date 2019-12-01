@@ -30,7 +30,13 @@ const TYPES = {
   string: "string",
   time: "number",
   unsignedInt: "number",
-  unsignedLong: "number"
+  unsignedLong: "number",
+  array: "any[]",
+  object: "any",
+  binaryDocument: "string",
+  jsonDocument: "any",
+  textDocument: "string",
+  xmlDocument: "string"
 };
 
 function genArgs(params) {
@@ -41,6 +47,25 @@ function genArgs(params) {
     str += "}";
   }
   return str;
+}
+
+function genReturn(r: { datatype: string }) {
+  const t = TYPES[r.datatype];
+  switch (t) {
+    case "Date":
+      return `return response.text().then(t => new Date(t))`;
+    case "object":
+      return `return response.json();`;
+    case "array":
+      return `return response.json() as Promise<any[]>;`;
+    case "boolean":
+      return `return response.json().then(j => !!j);`;
+    case "number":
+      return `return response.json() as Promise<number>`;
+    case "string":
+    default:
+      return `return response.text();`;
+  }
 }
 
 function genFunction(data: APIDefinition) {

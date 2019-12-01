@@ -5,8 +5,8 @@ class Startup {
     console.log("MLDS Generator");
     generateAPI({
       clientName: "GenTest",
-      apiFiles: ["sample.api", "whatsUp.api"],
-      outputPath: "GenTest.ts"
+      apiFiles: ["tests/api/whatsUp.api"],
+      outputPath: "tests/GenTest.ts"
     });
     return 0;
   }
