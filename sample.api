@@ -1,0 +1,6 @@
+{
+  "functionName": "sample",
+  "return": {
+    "datatype": "double"
+  }
+}
