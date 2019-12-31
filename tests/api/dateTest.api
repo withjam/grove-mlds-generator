@@ -1,0 +1,20 @@
+{
+  "functionName": "dateTest",
+  "params": [
+    {
+      "name": "today",
+      "datatype": "date"
+    },
+    {
+      "name": "tomorrow",
+      "datatype": "dateTime"
+    },
+    {
+      "name": "fromToday",
+      "datatype": "dayTimeDuration"
+    }
+  ],
+  "return": {
+    "datatype": "date"
+  }
+}

@@ -1,10 +1,10 @@
 {
   "name": "grove-mlds-generator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Generates TypeScript methods from MarkLogic DS api definitions",
   "main": "dist/index.js",
   "bin": {
-    "generate": "./bin/mlds-generate"
+    "mlds": "./src/index.js"
   },
   "preferGlobal": true,
   "scripts": {
@@ -19,5 +19,9 @@
     "jest": "^24.9.0",
     "tsc": "^1.20150623.0",
     "typescript": "^3.7.2"
+  },
+  "dependencies": {
+    "fast-glob": "^3.1.1",
+    "yargs": "^15.0.2"
   }
 }

@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync, write } from "fs";
+import * as ts from "typescript";
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.substring(1);
@@ -17,6 +18,11 @@ interface APIDefinition {
   };
 }
 
+export enum OUTPUT_FORMATS {
+  "JS",
+  "TS"
+}
+
 const TYPES = {
   boolean: "boolean",
   date: "Date",
@@ -28,15 +34,15 @@ const TYPES = {
   int: "number",
   long: "number",
   string: "string",
-  time: "number",
+  time: "string",
   unsignedInt: "number",
   unsignedLong: "number",
   array: "any[]",
   object: "any",
-  binaryDocument: "string",
-  jsonDocument: "any",
-  textDocument: "string",
-  xmlDocument: "string"
+  binaryDocument: "Blob",
+  jsonDocument: "Blob",
+  textDocument: "Blob",
+  xmlDocument: "Blob"
 };
 
 function genArgs(params) {
@@ -56,12 +62,18 @@ function genReturn(r: { datatype: string }) {
       return `return response.text().then(t => new Date(t))`;
     case "object":
       return `return response.json();`;
-    case "array":
+    case "Blob":
+      return `return response.blob();`;
+    case "any":
+      return `return response.json() as any;`;
+    case "any[]":
       return `return response.json() as Promise<any[]>;`;
     case "boolean":
       return `return response.json().then(j => !!j);`;
     case "number":
-      return `return response.json() as Promise<number>`;
+      return `return response
+      .json()
+      .then(j => (isNaN(j) ? NaN : (j as number))) as Promise<number>;`;
     case "string":
     default:
       return `return response.text();`;
@@ -77,9 +89,9 @@ function genFunction(data: APIDefinition) {
   })
       .then(response => {
         if (!response.ok) {
-          throw "Invalid response";
+          throw Error("Invalid response");
         }
-        return response.text();
+        ${genReturn(data.return)}
       });
   }`;
 }
@@ -92,7 +104,7 @@ export const ${capitalize(name)} = {
   }
 };
 export class ${capitalize(name) + "API"} {
-  client:MLDSClient;
+  protected client:MLDSClient;
   constructor(client: MLDSClient) {
     this.client = client;
   }
@@ -104,18 +116,25 @@ export class ${capitalize(name) + "API"} {
  * Generates a TypeScript API definition from .api file configurations
  */
 export function generateAPI(props: {
+  clientName: string;
+  outputPath: string;
   endpointNames?: string[];
   endpointBaseURL?: string;
   apiFiles?: string[];
-  clientName: string;
-  outputPath: string;
+  outputFormat?: OUTPUT_FORMATS;
 }) {
   const fileData = props.apiFiles
     ? props.apiFiles.map(name => JSON.parse(readFileSync(name, "utf8")))
     : [];
 
-  const root = genRoot(props.clientName, fileData);
-  console.log(root);
+  let source = genRoot(props.clientName, fileData);
+  console.log(source);
 
-  writeFileSync(props.outputPath, root, "utf8");
+  if (props.outputFormat === OUTPUT_FORMATS.JS) {
+    source = ts.transpileModule(source, {
+      compilerOptions: { module: ts.ModuleKind.CommonJS }
+    }).outputText;
+  }
+
+  writeFileSync(props.outputPath, source, "utf8");
 }

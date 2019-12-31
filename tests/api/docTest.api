@@ -1,0 +1,20 @@
+{
+  "functionName": "docTest",
+  "params": [
+    {
+      "name": "docx",
+      "datatype": "xmlDocument"
+    },
+    {
+      "name": "desc",
+      "datatype": "textDocument"
+    },
+    {
+      "name": "image",
+      "datatype": "binaryDocument"
+    }
+  ],
+  "return": {
+    "datatype": "jsonDocument"
+  }
+}

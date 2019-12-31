@@ -1,0 +1,24 @@
+{
+  "functionName": "numberTest",
+  "params": [
+    {
+      "name": "lat",
+      "datatype": "long"
+    },
+    {
+      "name": "price",
+      "datatype": "double"
+    },
+    {
+      "name": "age",
+      "datatype": "int"
+    },
+    {
+      "name": "years",
+      "datatype": "unsignedInt"
+    }
+  ],
+  "return": {
+    "datatype": "unsignedLong"
+  }
+}
